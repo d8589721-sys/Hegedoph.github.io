@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>如寄 - 个人文学自留地</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f7f6f3;
+            --bg-sidebar: #fdfcfb;
+            --bg-card: #ffffff;
+            --text-main: #2c2c2c;
+            --text-muted: #8e8e8e;
+            --text-light: #b0b0b0;
+            --border-color: #e8e6e1;
+            --accent: #c4a882;
+            --accent-subtle: #e8ddd0;
+            --font-serif: 'Noto Serif SC', 'Songti SC', 'SimSun', 'STSong', serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            --sidebar-width: 250px;
+            --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 0.45s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        ul {
+            list-style: none;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========== 左侧导航栏 ========== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+        .logo-area {
+            padding: 45px 0 28px;
+            text-align: center;
+            position: relative;
+        }
+        .logo-area::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 1px;
+            background: var(--accent-subtle);
+        }
+        .logo-img {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 14px;
+            filter: grayscale(60%);
+            transition: var(--transition-smooth);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+        .logo-img:hover {
+            filter: grayscale(0%);
+            transform: rotate(-3deg) scale(1.04);
+        }
+        .logo-text {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            letter-spacing: 6px;
+            font-weight: 500;
+        }
+        .logo-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            letter-spacing: 2px;
+            margin-top: 4px;
+            font-weight: 300;
+        }
+
+        .nav-menu {
+            padding: 28px 32px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .nav-item {
+            margin-bottom: 6px;
+            position: relative;
+        }
+        .nav-link {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            background-color: rgba(0, 0, 0, 0.025);
+            font-weight: 500;
+        }
+        .nav-link.active {
+            color: #1a1a1a;
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+        .nav-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            transition: var(--transition-bounce);
+            font-size: 0.6rem;
+            color: var(--text-light);
+            flex-shrink: 0;
+            margin-left: 6px;
+            opacity: 0.7;
+        }
+        .nav-item:hover .nav-arrow {
+            transform: rotate(180deg);
+            opacity: 1;
+            color: var(--accent);
+        }
+        .nav-link.active .nav-arrow {
+            color: var(--accent);
+            opacity: 0.9;
+        }
+
+        /* 左侧二级下拉菜单 */
+        .sub-nav {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.4s, padding 0.4s;
+            opacity: 0;
+            margin-top: 0;
+            padding-left: 0;
+            border-left: 2px solid transparent;
+            margin-left: 20px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .nav-item:hover .sub-nav {
+            max-height: 160px;
+            opacity: 1;
+            margin-top: 2px;
+            margin-bottom: 4px;
+            border-left-color: var(--accent-subtle);
+            padding-top: 4px;
+            padding-bottom: 4px;
+            padding-left: 16px;
+        }
+        .sub-nav a {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            padding: 7px 14px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.8px;
+            border-radius: 6px;
+            font-family: var(--font-serif);
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(-6px);
+            transition: all 0.35s ease, opacity 0.35s ease 0.05s, transform 0.35s ease 0.05s;
+        }
+        .sub-nav a::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent-subtle);
+            margin-right: 10px;
+            vertical-align: middle;
+            transition: var(--transition-smooth);
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+        .nav-item:hover .sub-nav a {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .nav-item:hover .sub-nav a:nth-child(1) {
+            transition-delay: 0.04s;
+        }
+        .nav-item:hover .sub-nav a:nth-child(2) {
+            transition-delay: 0.09s;
+        }
+        .nav-item:hover .sub-nav a:nth-child(3) {
+            transition-delay: 0.14s;
+        }
+        .sub-nav a:hover {
+            color: var(--text-main);
+            background-color: rgba(0, 0, 0, 0.03);
+            font-weight: 500;
+        }
+        .sub-nav a:hover::before {
+            background: var(--accent);
+            opacity: 1;
+            width: 7px;
+            height: 7px;
+            box-shadow: 0 0 0 3px rgba(196, 168, 130, 0.2);
+        }
+
+        .sidebar-footer {
+            padding: 20px 32px 28px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .sidebar-quote {
+            font-family: var(--font-serif);
+            font-size: 0.75rem;
+            color: var(--text-light);
+            letter-spacing: 1.5px;
+            font-style: italic;
+        }
+        .sidebar-quote::before {
+            content: '「';
+        }
+        .sidebar-quote::after {
+            content: '」';
+        }
+
+        /* ========== 主内容区 ========== */
+        .main-content {
+            flex: 1;
+            padding: 50px 5%;
+            max-width: 1000px;
+            min-width: 0;
+        }
+        .content-section {
+            margin-bottom: 90px;
+            scroll-margin-top: 30px;
+        }
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            font-weight: 500;
+            display: inline-block;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 55%;
+            height: 2px;
+            background: var(--accent-subtle);
+            border-radius: 1px;
+        }
+        .section-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            letter-spacing: 2px;
+            margin-bottom: 28px;
+            font-weight: 300;
+        }
+
+        /* ========== Tab 切换（二级分类） ========== */
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0;
+        }
+        .tab-btn {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            padding: 10px 22px;
+            cursor: pointer;
+            letter-spacing: 1.5px;
+            transition: var(--transition-smooth);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            outline: none;
+            white-space: nowrap;
+            position: relative;
+            border-radius: 0;
+        }
+        .tab-btn:hover {
+            color: var(--text-main);
+            background-color: rgba(0, 0, 0, 0.015);
+            border-bottom-color: var(--accent-subtle);
+        }
+        .tab-btn.active {
+            color: var(--text-main);
+            font-weight: 500;
+            border-bottom-color: var(--accent);
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid var(--accent);
+            display: none;
+        }
+
+        /* Tab 内容面板 */
+        .tab-panel {
+            display: none;
+            animation: fadeSlideIn 0.4s ease forwards;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 文章卡片网格 */
+        .article-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 32px;
+            margin-bottom: 20px;
+        }
+        .article-card {
+            display: flex;
+            background: var(--bg-card);
+            padding: 18px;
+            gap: 18px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+        .article-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-color);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+        .article-card.placeholder {
+            opacity: 0.75;
+            background: #fafaf8;
+            border: 1px dashed var(--border-color);
+        }
+        .article-card.placeholder .card-image {
+            background: #f2f0ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+        .article-card.placeholder .card-title {
+            color: var(--text-muted);
+        }
+        .card-image {
+            width: 95px;
+            height: 125px;
+            flex-shrink: 0;
+            background: #f0ede8;
+            overflow: hidden;
+            border-radius: 3px;
+        }
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(50%);
+            transition: 0.5s ease;
+        }
+        .article-card:hover .card-image img {
+            filter: grayscale(0%);
+            transform: scale(1.06);
+        }
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+        }
+        .card-category {
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .card-title {
+            font-family: var(--font-serif);
+            font-size: 1.08rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+        .article-card:hover .card-title {
+            color: #1a1a1a;
+        }
+        .card-excerpt {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+        .card-meta {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ========== 底部"找到我" ========== */
+        .site-footer {
+            width: 100%;
+            text-align: center;
+            padding: 45px 20px 50px;
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+        .footer-title {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-link {
+            font-size: 0.78rem;
+            padding: 8px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            color: var(--text-muted);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            letter-spacing: 1px;
+            background: transparent;
+        }
+        .footer-link:hover {
+            color: var(--text-main);
+            border-color: var(--accent);
+            background-color: rgba(196, 168, 130, 0.06);
+            transform: translateY(-2px);
+        }
+        .footer-copyright {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            letter-spacing: 1.5px;
+            margin-top: 28px;
+            font-family: var(--font-serif);
+        }
+
+        /* ========== 滚动条 ========== */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d8d5cf;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c5c1ba;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 1100px) {
+            .main-content {
+                padding: 35px 6%;
+                max-width: 100%;
+            }
+            .article-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 24px;
+            }
+            :root {
+                --sidebar-width: 220px;
+            }
+            .nav-menu {
+                padding: 20px 22px;
+            }
+            .nav-link {
+                font-size: 0.95rem;
+                padding: 8px 10px;
+            }
+            .tab-btn {
+                font-size: 0.85rem;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 700px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                padding: 12px 16px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                gap: 8px;
+            }
+            .logo-area {
+                padding: 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .logo-area::after {
+                display: none;
+            }
+            .logo-img {
+                width: 36px;
+                height: 36px;
+                margin-bottom: 0;
+            }
+            .logo-text {
+                font-size: 1.1rem;
+                letter-spacing: 3px;
+            }
+            .logo-subtitle {
+                display: none;
+            }
+            .nav-menu {
+                display: flex;
+                flex-wrap: wrap;
+                padding: 0;
+                gap: 4px;
+                flex: 0;
+                overflow-y: visible;
+            }
+            .nav-item {
+                margin-bottom: 0;
+            }
+            .nav-link {
+                font-size: 0.78rem;
+                padding: 6px 10px;
+                letter-spacing: 0.5px;
+            }
+            .nav-arrow {
+                width: 12px;
+                height: 12px;
+                font-size: 0.45rem;
+                margin-left: 2px;
+            }
+            .sub-nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background: #fff;
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                padding: 6px 10px !important;
+                margin: 4px 0 0 0 !important;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+                z-index: 20;
+                min-width: 130px;
+                border-left: 2px solid var(--accent-subtle) !important;
+            }
+            .nav-item:hover .sub-nav {
+                padding: 6px 10px !important;
+                margin: 4px 0 0 0 !important;
+            }
+            .sub-nav a {
+                font-size: 0.75rem;
+                padding: 5px 8px;
+            }
+            .sidebar-footer {
+                display: none;
+            }
+            .main-content {
+                padding: 24px 5%;
+            }
+            .content-section {
+                margin-bottom: 50px;
+            }
+            .section-title {
+                font-size: 1.5rem;
+            }
+            .tab-nav {
+                gap: 2px;
+                margin-bottom: 18px;
+            }
+            .tab-btn {
+                font-size: 0.75rem;
+                padding: 7px 12px;
+                letter-spacing: 1px;
+            }
+            .article-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .article-card {
+                flex-direction: column;
+                padding: 14px;
+                gap: 12px;
+            }
+            .card-image {
+                width: 100%;
+                height: 160px;
+                border-radius: 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- ==================== 左侧导航栏 ==================== -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <img src="https://images.unsplash.com/photo-1505236166416-831613144df3?w=200&q=80" alt="Logo" class="logo-img" loading="lazy">
+                <div class="logo-text">如寄</div>
+                <div class="logo-subtitle">RUKI · 文学自留地</div>
+            </div>
+
+            <nav class="nav-menu">
+                <!-- 长篇小说 -->
+                <div class="nav-item">
+                    <a href="#novel" class="nav-link">长篇小说<span class="nav-arrow">▾</span></a>
+                    <div class="sub-nav">
+                        <a href="#novel" data-tab="cyberpunk">赛博朋克</a>
+                        <a href="#novel" data-tab="history">历史悬疑</a>
+                        <a href="#novel" data-tab="wasteland">末世废土</a>
+                    </div>
+                </div>
+                <!-- 短篇集 -->
+                <div class="nav-item">
+                    <a href="#story" class="nav-link">短篇集<span class="nav-arrow">▾</span></a>
+                    <div class="sub-nav">
+                        <a href="#story" data-tab="urban">都市寓言</a>
+                        <a href="#story" data-tab="magic">魔幻现实</a>
+                    </div>
+                </div>
+                <!-- 随笔杂谈 -->
+                <div class="nav-item">
+                    <a href="#essay" class="nav-link">随笔杂谈<span class="nav-arrow">▾</span></a>
+                    <div class="sub-nav">
+                        <a href="#essay" data-tab="plants">人间草木</a>
+                        <a href="#essay" data-tab="notes">书影札记</a>
+                    </div>
+                </div>
+                <!-- 同人集 -->
+                <div class="nav-item">
+                    <a href="#fanfic" class="nav-link">同人集<span class="nav-arrow">▾</span></a>
+                    <div class="sub-nav">
+                        <a href="#fanfic" data-tab="original">原著向</a>
+                        <a href="#fanfic" data-tab="au">AU设定</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p class="sidebar-quote">人生如寄，多忧何为</p>
+            </div>
+        </aside>
+
+        <!-- ==================== 主内容区（含Tab切换） ==================== -->
+        <main class="main-content">
+
+            <!-- 长篇小说 -->
+            <section id="novel" class="content-section">
+                <h2 class="section-title">长篇小说</h2>
+                <p class="section-subtitle">NOVEL · 长篇连载</p>
+
+                <!-- Tab 标签栏 -->
+                <div class="tab-nav" data-section="novel">
+                    <button class="tab-btn active" data-tab="cyberpunk">赛博朋克</button>
+                    <button class="tab-btn" data-tab="history">历史悬疑</button>
+                    <button class="tab-btn" data-tab="wasteland">末世废土</button>
+                </div>
+
+                <!-- Tab 面板：赛博朋克 -->
+                <div class="tab-panel active" data-tab="cyberpunk">
+                    <div class="article-grid">
+                        <div class="article-card">
+                            <div class="card-image"><img src="https://images.unsplash.com/photo-1518773553398-650c184e0bb3?w=400" alt="cover" loading="lazy"></div>
+                            <div class="card-content">
+                                <span class="card-category">赛博朋克</span>
+                                <h3 class="card-title">仿生人会梦见电子羊吗</h3>
+                                <p class="card-excerpt">在霓虹闪烁的废土边缘，记忆成为最昂贵的违禁品。一位退役猎手与神秘仿生人的命运交织。</p>
+                                <span class="card-meta">2024年 · 连载中 · 12章</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 面板：历史悬疑 -->
+                <div class="tab-panel" data-tab="history">
+                    <div class="article-grid">
+                        <div class="article-card">
+                            <div class="card-image"><img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400" alt="cover" loading="lazy"></div>
+                            <div class="card-content">
+                                <span class="card-category">历史悬疑</span>
+                                <h3 class="card-title">长安十二时辰之外</h3>
+                                <p class="card-excerpt">一轴残卷，半阙旧词，揭开盛唐长安地下隐藏的惊天秘密。</p>
+                                <span class="card-meta">2023年 · 已完结 · 28章</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 面板：末世废土（预留） -->
+                <div class="tab-panel" data-tab="wasteland">
+                    <div class="article-grid">
+                        <div class="article-card placeholder">
+                            <div class="card-image"><span>🌆</span></div>
+                            <div class="card-content">
+                                <span class="card-category">末世废土</span>
+                                <h3 class="card-title">废土拾荒者手记</h3>
+                                <p class="card-excerpt">新故事正在加载中，敬请期待……</p>
+                                <span class="card-meta">即将更新</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 短篇集 -->
+            <section id="story" class="content-section">
+                <h2 class="section-title">短篇集</h2>
+                <p class="section-subtitle">SHORT STORIES · 短篇精选</p>
+
+                <div class="tab-nav" data-section="story">
+                    <button class="tab-btn active" data-tab="urban">都市寓言</button>
+                    <button class="tab-btn" data-tab="magic">魔幻现实</button>
+                </div>
+
+                <!-- Tab 面板：都市寓言 -->
+                <div class="tab-panel active" data-tab="urban">
+                    <div class="article-grid">
+                        <div class="article-card">
+                            <div class="card-image"><img src="https://images.unsplash.com/photo-1449844908441-8829872d2607?w=400" alt="cover" loading="lazy"></div>
+                            <div class="card-content">
+                                <span class="card-category">都市寓言</span>
+                                <h3 class="card-title">末班地铁的捕梦网</h3>
+                                <p class="card-excerpt">总有一些人在深夜的地铁里交换梦境，用最轻柔的方式彼此治愈。</p>
+                                <span class="card-meta">2024年6月 · 8,200字</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 面板：魔幻现实 -->
+                <div class="tab-panel" data-tab="magic">
+                    <div class="article-grid">
+                        <div class="article-card">
+                            <div class="card-image"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400" alt="cover" loading="lazy"></div>
+                            <div class="card-content">
+                                <span class="card-category">魔幻现实</span>
+                                <h3 class="card-title">鲸落书店</h3>
+                                <p class="card-excerpt">深巷尽头有一家只在雨夜出现的书店，每本书都是一个未竟的人生。</p>
+                                <span class="card-meta">2024年4月 · 6,500字</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 随笔杂谈 -->
+            <section id="essay" class="content-section">
+                <h2 class="section-title">随笔杂谈</h2>
+                <p class="section-subtitle">ESSAYS · 散淡时光</p>
+
+                <div class="tab-nav" data-section="essay">
+                    <button class="tab-btn active" data-tab="plants">人间草木</button>
+                    <button class="tab-btn" data-tab="notes">书影札记</button>
+                </div>
+
+                <!-- Tab 面板：人间草木 -->
+                <div class="tab-panel active" data-tab="plants">
+                    <div class="article-grid">
+                        <div class="article-card">
+                            <div class="card-image"><img src="https://images.unsplash.com/photo-1490226315516-7d6363a033f6?w=400" alt="cover" loading="lazy"></div>
+                            <div class="card-content">
+                                <span class="card-category">人间草木</span>
+                                <h3 class="card-title">秋日无事</h3>
+                                <p class="card-excerpt">煮一杯苦茶，看着窗外的落叶将庭院填满。岁月静好，不过如此。</p>
+                                <span class="card-meta">2024年5月 · 随笔</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 面板：书影札记 -->
+                <div class="tab-panel" data-tab="notes">
+                    <div class="article-grid">
+                        <div class="article-card">
+                            <div class="card-image"><img src="https://images.unsplash.com/photo-1473186578172-c141e6798fec?w=400" alt="cover" loading="lazy"></div>
+                            <div class="card-content">
+                                <span class="card-category">书影札记</span>
+                                <h3 class="card-title">读卡尔维诺的那个下午</h3>
+                                <p class="card-excerpt">在文字构筑的看不见的城市里，我找到了通往内心迷宫的地图。</p>
+                                <span class="card-meta">2024年3月 · 札记</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 同人集 -->
+            <section id="fanfic" class="content-section">
+                <h2 class="section-title">同人集</h2>
+                <p class="section-subtitle">FANFIC · 二次构想</p>
+
+                <div class="tab-nav" data-section="fanfic">
+                    <button class="tab-btn active" data-tab="original">原著向</button>
+                    <button class="tab-btn" data-tab="au">AU设定</button>
+                </div>
+
+                <!-- Tab 面板：原著向 -->
+                <div class="tab-panel active" data-tab="original">
+                    <div class="article-grid">
+                        <div class="article-card">
+                            <div class="card-image"><img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=400" alt="cover" loading="lazy"></div>
+                            <div class="card-content">
+                                <span class="card-category">原著向</span>
+                                <h3 class="card-title">平行世界的守望者</h3>
+                                <p class="card-excerpt">基于原作世界的二次构想与重绘，探索那些未被讲述的故事线。</p>
+                                <span class="card-meta">2024年 · 系列连载</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 面板：AU设定（预留） -->
+                <div class="tab-panel" data-tab="au">
+                    <div class="article-grid">
+                        <div class="article-card placeholder">
+                            <div class="card-image"><span>📖</span></div>
+                            <div class="card-content">
+                                <span class="card-category">AU设定</span>
+                                <h3 class="card-title">星河倒影·AU企划</h3>
+                                <p class="card-excerpt">平行宇宙的故事正在构思中，稍后带来惊喜。</p>
+                                <span class="card-meta">即将更新</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ==================== 底部"找到我" ==================== -->
+    <footer class="site-footer">
+        <div class="footer-title">找到我</div>
+        <div class="footer-links">
+            <span class="footer-link">📧 邮件</span>
+            <span class="footer-link">📝 豆瓣</span>
+            <span class="footer-link">📖 知乎</span>
+            <span class="footer-link">🕊️ 微博</span>
+        </div>
+        <div class="footer-copyright">© 2024 如寄 · 人生如寄，多忧何为</div>
+    </footer>
+
+    <script>
+        (function() {
+            // ========== Tab 切换逻辑 ==========
+            // 为所有 tab-btn 绑定点击事件
+            const allTabBtns = document.querySelectorAll('.tab-btn');
+            allTabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    const tabNav = this.closest('.tab-nav');
+                    const section = tabNav.closest('.content-section');
+
+                    // 移除该 tab-nav 下所有按钮的 active
+                    tabNav.querySelectorAll('.tab-btn').forEach(b => b.classList.remove(
+                        'active'));
+                    // 给当前按钮添加 active
+                    this.classList.add('active');
+
+                    // 隐藏该 section 下所有 tab-panel
+                    section.querySelectorAll('.tab-panel').forEach(panel => panel.classList
+                        .remove('active'));
+                    // 显示对应的 tab-panel
+                    const targetPanel = section.querySelector(`.tab-panel[data-tab="${tabName}"]`);
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                        // 重新触发动画
+                        targetPanel.style.animation = 'none';
+                        targetPanel.offsetHeight; // 强制回流
+                        targetPanel.style.animation = 'fadeSlideIn 0.4s ease forwards';
+                    }
+                });
+            });
+
+            // ========== 左侧导航二级菜单联动 ==========
+            const subNavLinks = document.querySelectorAll('.sub-nav a[data-tab]');
+            subNavLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('href').substring(1); // 如 "novel"
+                    const tabName = this.getAttribute('data-tab'); // 如 "cyberpunk"
+                    const targetSection = document.getElementById(sectionId);
+
+                    if (targetSection) {
+                        // 平滑滚动到目标 section
+                        targetSection.scrollIntoView({ behavior: 'smooth' });
+
+                        // 延迟一点再切换 tab，等滚动到位
+                        setTimeout(() => {
+                            const tabNav = targetSection.querySelector('.tab-nav');
+                            const targetBtn = tabNav?.querySelector(
+                                `.tab-btn[data-tab="${tabName}"]`);
+                            if (targetBtn) {
+                                targetBtn.click();
+                            }
+                        }, 400);
+                    }
+                });
+            });
+
+            // ========== 左侧主导航高亮（基于滚动位置） ==========
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            function updateMainNavHighlight() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 120) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', updateMainNavHighlight);
+
+            // ========== 移动端二级菜单触摸交互 ==========
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                const link = item.querySelector('.nav-link');
+                const subNav = item.querySelector('.sub-nav');
+                if (!link || !subNav) return;
+                link.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 700) {
+                        const isOpen = subNav.style.maxHeight && subNav.style.maxHeight !==
+                            '0px';
+                        if (!isOpen) {
+                            e.preventDefault();
+                            document.querySelectorAll('.sub-nav').forEach(sn => {
+                                sn.style.maxHeight = '0px';
+                                sn.style.opacity = '0';
+                                sn.style.paddingTop = '0';
+                                sn.style.paddingBottom = '0';
+                                sn.style.marginTop = '0';
+                                sn.style.marginBottom = '0';
+                                sn.style.borderLeftColor = 'transparent';
+                            });
+                            subNav.style.maxHeight = '160px';
+                            subNav.style.opacity = '1';
+                            subNav.style.paddingTop = '4px';
+                            subNav.style.paddingBottom = '4px';
+                            subNav.style.marginTop = '2px';
+                            subNav.style.marginBottom = '4px';
+                            subNav.style.borderLeftColor = 'var(--accent-subtle)';
+                        } else {
+                            subNav.style.maxHeight = '0px';
+                            subNav.style.opacity = '0';
+                            subNav.style.paddingTop = '0';
+                            subNav.style.paddingBottom = '0';
+                            subNav.style.marginTop = '0';
+                            subNav.style.marginBottom = '0';
+                            subNav.style.borderLeftColor = 'transparent';
+                        }
+                    }
+                });
+            });
+
+            // 点击页面其他地方关闭移动端二级菜单
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 700) {
+                    if (!e.target.closest('.nav-item')) {
+                        document.querySelectorAll('.sub-nav').forEach(sn => {
+                            sn.style.maxHeight = '0px';
+                            sn.style.opacity = '0';
+                            sn.style.paddingTop = '0';
+                            sn.style.paddingBottom = '0';
+                            sn.style.marginTop = '0';
+                            sn.style.marginBottom = '0';
+                            sn.style.borderLeftColor = 'transparent';
+                        });
+                    }
+                }
+            });
+
+            // ========== 初始化 ==========
+            // 处理 URL hash 指向特定 tab（如 #novel-cyberpunk 格式，兼容旧链接）
+            function handleInitialHash() {
+                const hash = window.location.hash.substring(1); // 如 "novel-cyberpunk"
+                if (!hash) return;
+                // 尝试匹配 sectionId-tabName 格式
+                const parts = hash.split('-');
+                if (parts.length >= 2) {
+                    // 从末尾往前尝试匹配已知的 section
+                    const knownSections = ['novel', 'story', 'essay', 'fanfic'];
+                    for (const secId of knownSections) {
+                        if (hash.startsWith(secId + '-')) {
+                            const tabName = hash.substring(secId.length + 1);
+                            const targetSection = document.getElementById(secId);
+                            if (targetSection) {
+                                setTimeout(() => {
+                                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                                    setTimeout(() => {
+                                        const tabBtn = targetSection.querySelector(
+                                            `.tab-btn[data-tab="${tabName}"]`);
+                                        if (tabBtn) tabBtn.click();
+                                    }, 400);
+                                }, 300);
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+
+            handleInitialHash();
+            // 初始触发一次高亮
+            window.dispatchEvent(new Event('scroll'));
+        })();
+    </script>
+</body>
+</html>
